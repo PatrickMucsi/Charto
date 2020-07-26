@@ -84,6 +84,7 @@ DATABASES = {
         'NAME': 'chartodb',
         'HOST': 'localhost',
         'USER': 'root',
+        'PASSWORD': 'dentyne40',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': 'set foreign_key_checks=0;',

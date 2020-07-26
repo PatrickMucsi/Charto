@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Crypto, ReferenceCrypto
-from .ViewManager import DashboardView, EditCryptoView, UpdateCryptoView, DeleteCryptoView, MyCryptosView
+from .ViewManager import *
 from .Utilities import load_supported_cryptos
 from .CryptoHandler import CryptoHandler as crypto_handler
 import requests, json, uuid
