@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% load static %}
+{% load humanize %}
+<html lang="en" dir="ltr">
+  <head>
+    {% include 'manager/header.html' %}
+  </head>
+  <body>
+    <div class="container">
+      <ul class="list-inline">
+        <li class="list-inline-item"><h2 id="appName">Charto</h2></li>
+        <li class="list-inline-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="list-inline-item"><a href="{% url 'logout_user' %}">Log out</a></li>
+      </ul>
+      <div class="row">
+        <div class="col-small">
+          <div class="card">
+            <div class="card-header text-center">
+              <h3>My Portfolio</h3>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li id="current_balance" class="list-group-item text-left" value="">Current Balance<h2>${{ user.current_balance | floatformat:2 | intcomma }}</h2></li>
+              <li id="total_invested" class="list-group-item text-left">Total Invested<h2>${{ info.total_invested | floatformat:2 | intcomma }}</h2></li>
+              <li id="total_gainloss" class="list-group-item text-left" value="{{ info.calculate_gainloss }}">Total Gain/Loss<h3 style="color: {{ info.get_gainloss_color }};">${{ info.calculate_gainloss | floatformat:2 | intcomma }}</h3></li>
+              <li id="percentage_gainloss" class="list-group-item text-left">Percentage Gain/Loss<h3 style="color: {{ info.get_gainloss_color }};">{{ info.get_gainloss_percentage | floatformat:2 | intcomma }}%</h3></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          {% include 'manager/crypto_table.html' %}
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+
+    });
+  </script>
+</html>

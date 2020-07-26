@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+{% load static %}
+{% load humanize %}
+<html lang="en" dir="ltr">
+  <head>
+    {% include 'manager/header.html' %}
+    <script src="https://kit.fontawesome.com/61e10d6819.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'manager/dashboard_style.css' %}">
+  </head>
+  <body>
+    <div class="container">
+      <ul class="list-inline">
+        <li class="list-inline-item"><h2 id="appName">Charto</h2></li>
+        <li class="list-inline-item"><a href="{% url 'manager:my_cryptos' %}">My Cryptos</a></li>
+        <li class="list-inline-item"><a href="{% url 'logout_user' %}">Log out</a></li>
+        <li class="list-inline-item">Current Balance: ${{ current_balance | floatformat:2 | intcomma }}</li>
+        <li class="float-right list-inline-item">
+          <button id="addCryptoButton" type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+            <i class="fas fa-plus"></i> Add
+          </button>
+        </li>
+      </ul>
+      <ul class="list-inline">
+        <li class="list-inline-item"><canvas id="pie_chart" width="350" height="450"></canvas></li>
+        <li class="list-inline-item"><canvas id="line_graph" width="700" height="450"></canvas></li>
+      </ul>
+      {% include 'manager/crypto_table.html' %}
+      </div>
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add Crypto</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{% url 'manager:create_crypto' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <input type="text" class="form-control" id="select_crypto" name="ticker" list="crypto_names" placeholder="Crypto Name" required>
+                  <datalist id="crypto_names">
+                    <option value="" selected="selected"></option>
+                    {% for crypto in crypto_list %}
+                    <option value="{{crypto}}">{{ crypto }}</option>
+                    {% endfor %}
+                  </datalist>
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="amount" placeholder="Amount Owned" required>
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="spent" placeholder="Spent On" required>
+                </div>
+                <input type="color" name="color" placeholder="Color" value="">
+                <button type="submit" class="float-right btn btn-info">Add</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js" charset="utf-8"></script>
+    <script type="text/javascript">
+    var ctx = document.getElementById('pie_chart').getContext('2d');
+    var pieChart = new Chart(ctx,{
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: {{ percentages | safe }},
+          backgroundColor: {{ colors | safe }}
+        }],
+        labels: {{ names | safe }}
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Portfolio Breakdown',
+          fontSize: 24,
+        },
+        responsive: false,
+        drawBorder: false,
+        chartArea: {
+          backgroundColor: '#fff'
+        },
+        legend: {
+          display: false
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              return data['labels'][tooltipItem['index']] + ': ' + parseFloat(data['datasets'][0]['data'][tooltipItem['index']]).toFixed(2) + "%";
+            }
+          }
+        }
+      }
+    });
+    var ctx2 = document.getElementById('line_graph').getContext('2d');
+    var lineGraph = new Chart(ctx2,{
+      type: 'line',
+      data: {
+        datasets: [{
+          borderColor: '#000',
+          fill: false,
+          data: {{ line_graph_worth | safe }}
+        }],
+        labels: {{ dates | safe }}
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Balance History',
+          fontSize: 24,
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              fontSize: 13,
+            },
+            gridLines: {
+              drawBorder: true,
+              drawTicks: true,
+              display: true,
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              fontSize: 13,
+              callback: function(value){
+                return '$' + value;
+              }
+            },
+            gridLines: {
+              drawBorder: true,
+              drawTicks: true,
+              display: true,
+            }
+          }]
+        },
+        responsive: false,
+        legend: {
+          display: false
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              return '$' + data['datasets'][0]['data'][tooltipItem['index']];
+            }
+          }
+        }
+      }
+    });
+    </script>
+  </body>
+</html>

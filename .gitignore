@@ -1,0 +1,5 @@
+# Charto Ignore #
+*.log
+*.pot
+*.pyc
+__pycache__

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+{% load static %}
+{% load humanize %}
+<html lang="en" dir="ltr">
+  <head>
+    {% include 'manager/header.html' %}
+  </head>
+  <body>
+    <div class="container">
+      <ul class="list-inline">
+        <li class="list-inline-item"><h2 id="appName"><a href="/dashboard">Charto</a></h2></li>
+        <li class="list-inline-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="list-inline-item"><a href="{% url 'logout_user' %}">Log out</a></li>
+      </ul>
+      <div class="row">
+        <div class="col">
+          <canvas id="line_graph" width="1110" height="300"></canvas>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col">
+              <form action="{% url 'manager:update' crypto.u_id %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <div class="card">
+                    <div class="card-header text-center">
+                      <h3>New Transaction</h3>
+                    </div>
+                    <div class="card-body btn-group btn-group-toggle" style="padding: 0;" data-toggle="buttons">
+                      <label class="btn btn-light active">
+                        <input type="radio" name="type" autocomplete="off" value="purchase" onchange="updateTransactionAmount('Spent', this)" required>Purchase
+                      </label>
+                      <label class="btn btn-light">
+                        <input type="radio" name="type" autocomplete="off" value="sale" onchange="updateTransactionAmount('Received', this)">Sale
+                      </label>
+                    </div>
+                    <li class="list-group-item">
+                      <div class="input-group">
+                        <input type="text" class="form-control" autocomplete="off" id="transaction_amount_tag" name="crypto_amount" placeholder="Amount" onChange="canAfford(this, 'crypto');" required>
+                        <div class="input-group-append">
+                          <span class="input-group-text">{{ crypto.reference_crypto.ticker }}</span>
+                        </div>
+                      </div>
+                      <small id="clear_transaction" class="float-right"> Clear</small>
+                      <small id="divider" style="visibility: hidden; margin-right: 2px; margin-left:2px;" class="float-right">|</small>
+                      <small id="sell_all" style="visibility: hidden;" class="float-right">All</small>
+                    </li>
+                    <li class="list-group-item">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">$</span>
+                        </div>
+                        <input type="text" class="form-control" autocomplete="off" id="transaction" name="transaction_amount" placeholder="Spent" onChange="canAfford(this, 'money');" required>
+                      </div>
+                    </li>
+                    <li class="list-group-item">
+                      <div class="row">
+                        <div class="col"</div>
+                          <button type="submit" class="col-small float-right btn btn-success">Submit</button>
+                        </div>
+                      </div>
+                    </li>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="card">
+                <div class="card-header text-center">
+                  <h3>{{ crypto.reference_crypto.ticker }} Price Predictor</h3>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                    <div class="row">
+                      <div class="col input-group">
+                        <input type="text" class="form-control" autocomplete="off" value="" id="price_predictor_crypto">
+                        <div class="input-group-append">
+                          <span class="input-group-text">{{ crypto.reference_crypto.ticker }}</span>
+                        </div>
+                      </div>
+                      <h5>@</h5>
+                      <div class="col input-group">
+                        <div class="input-group-append">
+                          <span class="input-group-text">$</span>
+                        </div>
+                        <input type="text" class="form-control" autocomplete="off" value="" id="price_predictor_price">
+                      </div>
+                    </div>
+                    <small id="price_predictor_all" style="visibility: visible;" class="float-left">All</small>
+                    <small id="price_predictor_25" style="visibility: visible; margin-left:4px;" class="float-left">25%</small>
+                    <small id="price_predictor_50" style="visibility: visible; margin-left:4px;" class="float-left">50%</small>
+                  </li>
+                  <li class="list-group-item">
+                    Would be worth<h3 id="price_predictor_result" class="text-success">$0</h3>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-small">
+          <div class="card">
+            <div class="card-header text-center">
+              <h3>My {{ crypto.reference_crypto.ticker }}</h3>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li id="current_price" class="list-group-item text-left" value="{{amount_owned}}">Current Price<h3>${{ crypto.reference_crypto.current_price | floatformat:4 | intcomma }}</h3></li>
+              <li class="list-group-item text-left">Average<h3 class="">${{ crypto.get_average | floatformat:4 | intcomma }}</h3></li>
+              <li id="amount_owned" class="list-group-item text-left" value="{{amount_owned}}">Owned<h3>{{ crypto.amount | floatformat:8 | intcomma }}</h3></li>
+              <li id="worth" class="list-group-item text-left" value="{{worth}}">Worth<h3 class="text-success">${{ crypto.get_worth | floatformat:2 | intcomma }}</h3></li>
+              <li id="invested" class="list-group-item text-left" value="{{worth}}">Invested<h3 class="text-success">${{ crypto.spent | floatformat:2 | intcomma }}</h3></li>
+              <li id="total_gainloss" class="list-group-item text-left" value="{{worth}}">Total Gain/Loss<h3 class="text-success">${{ crypto.get_gainloss | floatformat:2 | intcomma }}</h3></li>
+              <li id="percentage_gainloss"class="list-group-item text-left">Percentage Gain/Loss<h3 style="color: {{ crypto.get_gainloss_color }};">{{ crypto.get_gainloss_percentage | floatformat:2 | intcomma }}%</h3></li>
+              <form action="{% url 'manager:update' crypto.u_id %}" method="post">
+                <li class="list-group-item text-left">Color
+                  <div class="col">
+                    <label style="border: 2px solid black; background-color: {{ crypto.color }};">
+                      <input style="visibility: hidden;" type="color" autocomplete="off" name="color" value="{{ crypto.color }}" onchange="updateColor(this);">
+                    </label>
+                    <input id="change_color_button" type="submit" class="btn btn-secondary" value="Update" disabled>
+                  </div>
+                </li>
+                <li class="list-group-item text-left">
+                  <button id="deleteCryptoButton" type="button" class="col btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+                    <i class="fas fa-plus"></i> Delete
+                  </button>
+                </li>
+              </form>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel">Confirm</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{% url 'manager:delete' crypto.u_id %}" method="post">
+                {% csrf_token %}
+                <p>Are you sure you want to remove {{ crypto.reference_crypto.ticker }} from your portfolio?</p>
+                <div class="form-group">
+                  <input type="text" class="form-control" autocomplete="off" name="response" placeholder="Type 'Yes' here" required>
+                </div>
+                <button type="submit" class="float-right btn btn-info">Confirm</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js" charset="utf-8"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  var ctx = document.getElementById('line_graph').getContext('2d');
+  var lineGraph = new Chart(ctx,{
+    type: 'line',
+    data: {
+      datasets: [{
+        borderColor: '{{ crypto.color }}',
+        fill: false,
+        data: {{ line_graph_worth | safe }}
+      }],
+      labels: {{ dates | safe }}
+    },
+    options: {
+      title: {
+        display: true,
+        text: '{{ crypto.reference_crypto.ticker }} Price History',
+        fontSize: 24,
+      },
+      scales: {
+        xAxes: [{
+          ticks: {
+            fontSize: 13,
+          },
+          gridLines: {
+            drawBorder: true,
+            drawTicks: true,
+            display: true,
+          }
+        }],
+        yAxes: [{
+          ticks: {
+            fontSize: 13,
+          },
+          gridLines: {
+            drawBorder: true,
+            drawTicks: true,
+            display: true,
+          }
+        }]
+      },
+      responsive: false,
+      legend: {
+        display: false
+      },
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem, data) {
+            var indexValue = parseFloat(data['datasets'][0]['data'][tooltipItem['index']]);
+            return ['Price: $' + indexValue.toFixed(4), 'Worth: $' + (indexValue*parseFloat("{{ crypto.amount }}")).toFixed(2)];
+          }
+        }
+      }
+    }
+  });
+
+  function updateTransactionAmount(type, obj){
+    document.getElementById('transaction').placeholder = type;
+    if (type=='Received'){
+      document.getElementById('sell_all').style.visibility = "visible";
+      document.getElementById('divider').style.visibility = "visible";
+    }else{
+      document.getElementById('sell_all').style.visibility = "hidden";
+      document.getElementById('divider').style.visibility = "hidden";
+    }
+  }
+  function updateColor(obj){
+    obj.parentElement.style.backgroundColor = obj.value;
+    document.getElementById("change_color_button").disabled = false;
+  }
+  function canAfford(obj, type){
+    console.log(document.getElementById('transaction').placeholder);
+    if(document.getElementById('transaction').placeholder == 'Received'){
+      console.log('First if');
+      if (type == 'crypto'){
+        console.log('second if');
+        if (document.getElementById('amount_owned').value < obj.value){
+          console.log("Can't afford")
+        }
+      }else if(type == 'money'){
+        if (document.getElementById('worth').value - obj.value <= 0){
+
+        }
+      }
+    }
+  }
+  $(document).ready(function(){
+    $("#sell_all").click(function(){
+      $("#transaction_amount_tag").val("{{ crypto.amount }}");
+    });
+    $("#clear_transaction").click(function(){
+      $("#transaction_amount_tag").val("");
+    });
+    $("#price_predictor_all").click(function(){
+      $("#price_predictor_crypto").val("{{ crypto.amount }}");
+    });
+    $("#price_predictor_25").click(function(){
+      var amount = parseFloat("{{crypto.amount}}");
+      amount = amount * .25;
+      $("#price_predictor_crypto").val(amount);
+    });
+    $("#price_predictor_50").click(function(){
+      var amount = parseFloat("{{crypto.amount}}");
+      amount = amount * .5;
+      $("#price_predictor_crypto").val(amount);
+    });
+    $("#price_predictor_price").on("change keyup paste click", function(){
+      var amount = parseFloat($("#price_predictor_crypto").val().replace(',', ''));
+      var price = parseFloat($("#price_predictor_price").val());
+      var prediction = (amount * price).toFixed(2);
+      if(prediction == 'NaN'){
+        prediction = 0.0;
+      }
+      $("#price_predictor_result").text("$"+parseFloat(prediction).toLocaleString());
+    });
+    $("#price_predictor_crypto").on("update change keyup paste click", function(){
+      var amount = parseFloat($("#price_predictor_crypto").val().replace(',', ''));
+      var price = parseFloat($("#price_predictor_price").val());
+      var prediction = (amount * price).toFixed(2);
+      if(prediction == 'NaN'){
+        prediction = 0.0;
+      }
+      $("#price_predictor_result").text("$"+parseFloat(prediction).toLocaleString());
+    });
+  });
+  </script>
+</html>
