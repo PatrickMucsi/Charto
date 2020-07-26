@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .CMCAccess import CMCAccess
 from django_mysql.models import ListTextField
 from datetime import datetime
 
