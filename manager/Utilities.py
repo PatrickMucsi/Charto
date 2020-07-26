@@ -14,10 +14,11 @@ def query_site(cryptos):
         result = request.json()['data']
     else:
         result = {}
+    return result
 
 def initial_price(crypto):
-    json = query_site(crypto)
-    return get_price(json, crypto)
+    json_info = query_site(crypto)
+    return get_price(json_info, crypto)
 
 def get_price(json_prices, crypto):
     return json_prices[crypto.upper()]['quote']['USD']['price']

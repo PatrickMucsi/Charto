@@ -8,7 +8,7 @@ class CryptoHandler():
         if ReferenceCrypto.objects.filter(ticker=ticker).exists():
             ref_crypto = ReferenceCrypto.objects.get(ticker=ticker)
         else:
-            initial_price(ticker)
+            price = initial_price(ticker)
             ref_crypto = ReferenceCrypto.objects.create(ticker=ticker, current_price=price)
         return ref_crypto
 
