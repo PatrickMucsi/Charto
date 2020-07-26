@@ -19,5 +19,5 @@ def initial_price(crypto):
     json = query_site(crypto)
     return get_price(json, crypto)
 
-def get_price(json, crypto):
-    return json[crypto.upper()]['quote']['USD']['price']
+def get_price(json_prices, crypto):
+    return json_prices[crypto.upper()]['quote']['USD']['price']
