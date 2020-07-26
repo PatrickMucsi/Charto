@@ -1,5 +1,5 @@
 from .models import Crypto, ReferenceCrypto
-from .Utilities import initial_price, query_site
+from .Utilities import *
 from .ChartCreator import PieChart, LineGraph
 
 
