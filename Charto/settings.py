@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'datetime',
     'django.contrib.humanize',
     'django_mysql',
+    'background_task',
 ]
 
 MIDDLEWARE = [
