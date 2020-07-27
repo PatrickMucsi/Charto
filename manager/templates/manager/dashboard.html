@@ -6,20 +6,27 @@
     {% include 'manager/header.html' %}
     <script src="https://kit.fontawesome.com/61e10d6819.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'manager/dashboard_style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
   </head>
   <body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container">
+        <a id="appName" class="navbar-brand" href="#">Charto</a>
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="{% url 'manager:my_cryptos' %}">My Cryptos</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'logout_user' %}">Log out</a></li>
+            <li class="nav-item">Current Balance: ${{ current_balance | floatformat:2 | intcomma }}</li>
+            <li class="nav-item">
+              <button id="addCryptoButton" type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+                <i class="fas fa-plus"></i> Add
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
     <div class="container">
-      <ul class="list-inline">
-        <li class="list-inline-item"><h2 id="appName">Charto</h2></li>
-        <li class="list-inline-item"><a href="{% url 'manager:my_cryptos' %}">My Cryptos</a></li>
-        <li class="list-inline-item"><a href="{% url 'logout_user' %}">Log out</a></li>
-        <li class="list-inline-item">Current Balance: ${{ current_balance | floatformat:2 | intcomma }}</li>
-        <li class="float-right list-inline-item">
-          <button id="addCryptoButton" type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
-            <i class="fas fa-plus"></i> Add
-          </button>
-        </li>
-      </ul>
       <ul class="list-inline">
         <li class="list-inline-item"><canvas id="pie_chart" width="350" height="450"></canvas></li>
         <li class="list-inline-item"><canvas id="line_graph" width="700" height="450"></canvas></li>

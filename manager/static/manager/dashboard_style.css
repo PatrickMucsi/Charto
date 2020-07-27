@@ -1,6 +1,10 @@
-body {
-  /* background-color: #fcddc9; */
-}
 #appName {
-  color: #000;
+  font-family: 'Grand Hotel', sans-serif;
+  font-size: 50px;
+  font-weight: bold;
+  color: #add8e6;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: #999;
 }
