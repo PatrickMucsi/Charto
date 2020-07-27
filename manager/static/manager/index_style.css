@@ -1,0 +1,23 @@
+.bodyWrapper {
+  margin-top: 100px;
+  text-align: center;
+}
+
+#appName {
+  font-family: 'Grand Hotel', sans-serif;
+  font-size: 60px;
+  font-weight: bold;
+  color: #add8e6;
+}
+
+#signUpLink {
+  background-color: #e6bbad;
+  color: #fff;
+  font-weight: bold;
+}
+
+#logInLink {
+  background-color: #adbce6;
+  color: #fff;
+  font-weight: bold;
+}

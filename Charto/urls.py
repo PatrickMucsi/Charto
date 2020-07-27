@@ -20,7 +20,10 @@ from manager import views  as manager_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', include("manager.urls"), name='dashboard'),
-    path('', manager_views.login_page, name='login_page'),
+    path('', manager_views.home_page, name='home_page'),
+    path('login', manager_views.login_page, name='login_page'),
+    path('signup', manager_views.signup_page, name='signup_page'),
+    path('signup-user', manager_views.signup_user, name='signup_user'),
     path('login-user', manager_views.login_user, name='login_user'),
-    path('logout-user', manager_views.logout_user, name='logout_user')
+    path('logout-user', manager_views.logout_user, name='logout_user'),
 ]

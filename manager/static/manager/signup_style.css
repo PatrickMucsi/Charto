@@ -1,0 +1,32 @@
+html, body {
+  height: 70%;
+}
+
+body {
+  display: flex;
+}
+
+.signUpForm {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+  margin-top: auto;
+}
+
+#signUpFormTitle {
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  color: #add8e6;
+}
+
+.formInput {
+  margin-top: 4px;
+}
+
+#submitButton {
+  font-weight: bold;
+  background-color: #adbce6;
+  color: #fff;
+  margin-top: 5px;
+}

@@ -1,12 +1,53 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib.auth.models import User
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Crypto, ReferenceCrypto
 from .ViewManager import *
 from .Utilities import load_supported_cryptos
 from .CryptoHandler import CryptoHandler as crypto_handler
+from .forms import RegisterForm
+from .models import Account
 import requests, json, uuid
+
+# Main home page
+def home_page(request):
+    return render(request, 'manager/index.html')
+
+def login_page(request):
+    return render(request, 'manager/login.html')
+
+def signup_page(request):
+    return render(request, 'manager/signup.html')
+
+# Log in user and redirect to dashboard
+def login_user(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    login(request, user)
+    return redirect('/dashboard')
+
+def signup_user(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            email = form.cleaned_data["email"]
+            password = form.cleaned_data["password"]
+            new_user = User.objects.create_user(username, email, password)
+            Account.objects.create(user=new_user)
+            messages.success(request, "Your account was created successfully. You can now log in.")
+            return redirect("login_page")
+        else:
+            return render(request, 'manager/signup.html', {'form': form})
+
+# Log out user and redirect to home page
+def logout_user(request):
+    logout(request)
+    return redirect('home_page')
 
 @login_required(login_url='login_page')
 def dashboard(request):
@@ -14,9 +55,6 @@ def dashboard(request):
     return render(request, 'manager/dashboard.html', {'cryptos':dashView.cryptos[:10], 'crypto_list':dashView.supported_cryptos,
     'names':dashView.pie_chart.names,'percentages':dashView.pie_chart.percentages,'colors':dashView.pie_chart.colors, 'line_graph_worth':dashView.line_graph.worth[-19:],
     'dates':dashView.line_graph.dates[-19:], 'current_balance':dashView.current_balance})
-
-def login_page(request):
-    return render(request, 'manager/index.html', {})
 
 @login_required(login_url='login_page')
 def create_crypto(request):
@@ -52,14 +90,3 @@ def edit_crypto(request, uuid):
     editView = EditCryptoView(uuid)
     return render(request, 'manager/edit_crypto.html', {'crypto':editView.crypto, 'line_graph_worth':editView.line_graph.worth[-14:],
     'dates':editView.line_graph.dates[-14:]})
-
-def login_user(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
-    login(request, user)
-    return redirect('/dashboard')
-
-def logout_user(request):
-    logout(request)
-    return redirect('login_page')
