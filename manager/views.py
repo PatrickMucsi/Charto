@@ -63,7 +63,7 @@ def create_crypto(request):
     ticker = request.POST['ticker'].upper()
     if ticker in crypto_names:
         amount = request.POST['amount']
-        spent = request.POST['spent']
+        spent = 1 if float(request.POST['spent']) <= 0 else request.POST['spent']
         color = request.POST['color']
         ref_crypto = crypto_handler.add_to_portfolio(ticker)
         crypto = Crypto.objects.create(reference_crypto=ref_crypto, amount=amount, spent=spent, color=color, owner=request.user, u_id=uuid.uuid4())
