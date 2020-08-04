@@ -30,6 +30,7 @@ def login_user(request):
     login(request, user)
     return redirect('/dashboard')
 
+# Create a new user and account
 def signup_user(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
