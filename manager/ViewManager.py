@@ -6,10 +6,9 @@ from .models import Crypto
 class DashboardView():
     def __init__(self, request):
         self.cryptos = crypto_handler.sort_cryptos(request.user.my_cryptos.all())
-        #self.update_cryptos()
         self.supported_cryptos = self.get_supported_cryptos()
-        self.current_balance = account_handler.get_current_balance(request.user)
         account_handler.update_account_balance(request.user, self.cryptos)
+        self.current_balance = account_handler.get_current_balance(request.user)
         self.create_dashboard(request)
 
     def create_dashboard(self, request):
@@ -18,6 +17,11 @@ class DashboardView():
 
     def get_supported_cryptos(self):
         return load_supported_cryptos()
+
+class RefreshCryptoView():
+    def __init__(self, request):
+        self.cryptos = crypto_handler.sort_cryptos(request.user.my_cryptos.all())
+        self.update_cryptos()
 
     def update_cryptos(self):
         crypto_handler.update_cryptos(self.cryptos)
@@ -63,9 +67,6 @@ class UpdateCryptoView():
         self.transact(request.POST['type'],request.POST['crypto_amount'],
         request.POST['transaction_amount'])
 
-    def did_change(self, before, after):
-        return (before != after)
-
     def can_afford(self, sale_amount):
         return (float(self.crypto.amount) >= float(sale_amount))
 
@@ -79,6 +80,13 @@ class UpdateCryptoView():
             self.crypto.purchase(amount, money)
         else:
             print("nope")
+
+class ChangeColorView():
+    def __init__(self, request, uuid):
+        self.new_color = request.POST['color']
+        self.crypto = crypto_handler.get_crypto(uuid)
+        self.crypto.color = self.new_color
+        self.crypto.save()
 
 class DeleteCryptoView():
     def __init__(self, request, uuid):

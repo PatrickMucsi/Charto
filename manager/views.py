@@ -51,10 +51,17 @@ def logout_user(request):
 
 @login_required(login_url='login_page')
 def dashboard(request):
+    load_amount = 25
     dashView = DashboardView(request)
     return render(request, 'manager/dashboard.html', {'cryptos':dashView.cryptos[:10], 'crypto_list':dashView.supported_cryptos,
-    'names':dashView.pie_chart.names,'percentages':dashView.pie_chart.percentages,'colors':dashView.pie_chart.colors, 'line_graph_worth':dashView.line_graph.worth[-19:],
-    'dates':dashView.line_graph.dates[-19:], 'current_balance':dashView.current_balance})
+    'names':dashView.pie_chart.names,'percentages':dashView.pie_chart.percentages,'colors':dashView.pie_chart.colors,
+    'line_graph_worth':dashView.line_graph.worth[-(load_amount-1):],'dates':dashView.line_graph.dates[-(load_amount-1):],
+    'current_balance':dashView.current_balance})
+
+@login_required(login_url='login_page')
+def refresh_cryptos(request):
+    refreshView = RefreshCryptoView(request)
+    return redirect('/dashboard')
 
 @login_required(login_url='login_page')
 def create_crypto(request):
@@ -81,12 +88,18 @@ def update(request, uuid):
     return redirect('manager:edit_crypto', uuid)
 
 @login_required(login_url='login_page')
+def change_color(request, uuid):
+    changeView = ChangeColorView(request, uuid)
+    return redirect('manager:edit_crypto', uuid)
+
+@login_required(login_url='login_page')
 def delete(request, uuid):
     deleteView = DeleteCryptoView(request, uuid)
     return redirect('manager:my_cryptos')
 
 @login_required(login_url='login_page')
 def edit_crypto(request, uuid):
+    load_amount = 30
     editView = EditCryptoView(uuid)
-    return render(request, 'manager/edit_crypto.html', {'crypto':editView.crypto, 'line_graph_worth':editView.line_graph.worth[-14:],
-    'dates':editView.line_graph.dates[-14:]})
+    return render(request, 'manager/edit_crypto.html', {'crypto':editView.crypto, 'line_graph_worth':editView.line_graph.worth[-(load_amount-1):],
+    'dates':editView.line_graph.dates[-(load_amount-1):]})

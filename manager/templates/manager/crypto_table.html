@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load mathfilters %}
 <table class="table table-hover">
   <thead>
     <tr>
@@ -6,6 +7,7 @@
       <th class="text-center">Crypto</th>
       <th class="text-right">Price</th>
       <th class="text-right">Owned</th>
+      <th class="text-right">Invested</th>
       <th class="text-right">Worth</th>
       <th class="text-right">Gain/Loss</th>
       <th class="text-right">Gain/Loss %</th>
@@ -19,9 +21,10 @@
       <td class="text-center" style="color: {{ crypto.color }}"><strong>{{ crypto.reference_crypto.ticker }}</strong></td>
       <td class="text-right">${{ crypto.reference_crypto.current_price | floatformat:4 }}</td>
       <td class="text-right">{{ crypto.amount | floatformat:4 | intcomma }}</td>
+      <td class="text-right">${{ crypto.spent | floatformat:2 | intcomma }}</td>
       <td class="text-right">${{ crypto.get_worth | floatformat:2 | intcomma }}</td>
-      <td class="text-right" style="color:{{ crypto.get_gainloss_color }};"><strong>${{ crypto.get_gainloss | floatformat:2 | intcomma }}</strong></td>
-      <td class="text-right" style="color:{{ crypto.get_gainloss_color }};"><strong>{{ crypto.get_gainloss_percentage | floatformat:2 | intcomma }}%</strong></td>
+      <td class="text-right" style="color:{{ crypto.get_gainloss_color }};"><strong>${{ crypto.get_gainloss | abs | floatformat:2 | intcomma }}</strong></td>
+      <td class="text-right" style="color:{{ crypto.get_gainloss_color }};"><strong>{{ crypto.get_gainloss_percentage | abs | floatformat:2 | intcomma }}%</strong></td>
       <td><a href="{% url 'manager:edit_crypto' crypto.u_id %}">View</a></td>
     </tr>
     {% endfor %}

@@ -4,21 +4,19 @@
 <html lang="en" dir="ltr">
   <head>
     {% include 'manager/header.html' %}
-    <script src="https://kit.fontawesome.com/61e10d6819.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'manager/dashboard_style.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container">
-        <a id="appName" class="navbar-brand" href="#">Charto</a>
+        <a id="appName" class="navbar-brand" href="/dashboard">Charto</a>
         <div class="collapse navbar-collapse">
           <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="{% url 'manager:refresh_cryptos' %}">Refresh</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'manager:my_cryptos' %}">My Cryptos</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'logout_user' %}">Log out</a></li>
-            <li class="nav-item">Current Balance: ${{ current_balance | floatformat:2 | intcomma }}</li>
             <li class="nav-item">
-              <button id="addCryptoButton" type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+              <button id="addCryptoButton" type="button" class="btn btn-info" data-toggle="modal" data-target="#createCryptoModal">
                 <i class="fas fa-plus"></i> Add
               </button>
             </li>
@@ -34,11 +32,11 @@
       {% include 'manager/crypto_table.html' %}
       </div>
       <!-- Create crypto modal -->
-      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="createCryptoModal" tabindex="-1" role="dialog" aria-labelledby="createCryptoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Add Crypto</h5>
+              <h5 class="modal-title" id="createCryptoModalLabel">Add Crypto</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -99,6 +97,8 @@
           display: false
         },
         tooltips: {
+          titleFontSize: 20,
+          bodyFontSize: 20,
           callbacks: {
             label: function(tooltipItem, data) {
               return data['labels'][tooltipItem['index']] + ': ' + parseFloat(data['datasets'][0]['data'][tooltipItem['index']]).toFixed(2) + "%";
@@ -121,7 +121,7 @@
       options: {
         title: {
           display: true,
-          text: 'Balance History',
+          text: 'Current Balance: ${{ current_balance | floatformat:2 | intcomma }}',
           fontSize: 24,
         },
         scales: {
@@ -154,6 +154,8 @@
           display: false
         },
         tooltips: {
+          titleFontSize: 20,
+          bodyFontSize: 20,
           callbacks: {
             label: function(tooltipItem, data) {
               return '$' + data['datasets'][0]['data'][tooltipItem['index']];

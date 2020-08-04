@@ -1,5 +1,5 @@
 from .models import Crypto, Account
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class PieChart():
     def __init__(self, user_cryptos):
@@ -28,16 +28,18 @@ class LineGraph():
         if type == 'account':
             for balance_time in info.previous_balances_times:
                 converted_balance_time = datetime.strptime(balance_time, "%Y-%m-%d %H:%M:%S.%f")
-                self.dates.append(converted_balance_time.strftime("%a-%H:%M"))
+                converted_balance_time -= timedelta(hours=7)
+                self.dates.append(converted_balance_time.strftime("%a-%-I:%M"))
             converted_balance_time = datetime.strptime(info.current_time, "%Y-%m-%d %H:%M:%S.%f")
-            self.dates.append(converted_balance_time.strftime("%a-%H:%M"))
+            converted_balance_time -= timedelta(hours=7)
+            self.dates.append(converted_balance_time.strftime("%a-%-I:%M"))
             self.worth = info.previous_balances
             self.worth.append(info.current_balance)
         elif type == 'crypto':
             for price_time in info.reference_crypto.previous_prices_times:
                 converted_balance_time = datetime.strptime(price_time, "%Y-%m-%d %H:%M:%S.%f")
-                self.dates.append(converted_balance_time.strftime("%a-%H:%M"))
+                self.dates.append(converted_balance_time.strftime("%a-%-I:%M"))
             converted_balance_time = datetime.strptime(info.reference_crypto.current_time, "%Y-%m-%d %H:%M:%S.%f")
-            self.dates.append(converted_balance_time.strftime("%a-%H:%M"))
+            self.dates.append(converted_balance_time.strftime("%a-%-I:%M"))
             self.worth = info.reference_crypto.previous_prices
             self.worth.append(info.reference_crypto.current_price)
