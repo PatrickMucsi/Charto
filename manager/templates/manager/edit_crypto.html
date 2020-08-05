@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
 {% load humanize %}
+{% load mathfilters %}
 <html lang="en" dir="ltr">
   <head>
     {% include 'manager/header.html' %}
@@ -116,12 +117,12 @@
               <h3>My {{ crypto.reference_crypto.ticker }}</h3>
             </div>
             <ul class="list-group list-group-flush">
-              <li id="current_price" class="list-group-item text-left" value="{{amount_owned}}">Current Price<h3>${{ crypto.reference_crypto.current_price | floatformat:4 | intcomma }}</h3></li>
-              <li class="list-group-item text-left">My Average<h3 class="">${{ crypto.get_average | floatformat:4 | intcomma }}</h3></li>
-              <li id="amount_owned" class="list-group-item text-left" value="{{amount_owned}}">Owned<h3>{{ crypto.amount | floatformat:8 | intcomma }}</h3></li>
-              <li id="worth" class="list-group-item text-left" value="{{worth}}">Worth<h3 class="text-success">${{ crypto.get_worth | floatformat:2 | intcomma }}</h3></li>
-              <li id="invested" class="list-group-item text-left" value="{{worth}}">Invested<h3 class="text-success">${{ crypto.spent | floatformat:2 | intcomma }}</h3></li>
-              <li id="total_gainloss" class="list-group-item text-left" value="{{worth}}">Total Gain/Loss<h3 class="text-success">${{ crypto.get_gainloss | floatformat:2 | intcomma }}</h3></li>
+              <li id="current_price" class="list-group-item text-left">Current Price<h3>${{ crypto.reference_crypto.current_price | floatformat:4 | intcomma }}</h3></li>
+              <li class="list-group-item text-left">My Average<h3>${{ crypto.get_average | floatformat:4 | intcomma }}</h3></li>
+              <li id="amount_owned" class="list-group-item text-left">Owned<h3>{{ crypto.amount | floatformat:8 | intcomma }}</h3></li>
+              <li id="worth" class="list-group-item text-left">Worth<h3 class="text-success">${{ crypto.get_worth | floatformat:2 | intcomma }}</h3></li>
+              <li id="invested" class="list-group-item text-left">Invested<h3 class="text-success">${{ crypto.spent | floatformat:2 | intcomma }}</h3></li>
+              <li id="total_gainloss" class="list-group-item text-left">Total Gain/Loss<h3 style="color: {{ crypto.get_gainloss_color }};">${{ crypto.get_gainloss | abs | floatformat:2 | intcomma }}</h3></li>
               <li id="percentage_gainloss"class="list-group-item text-left">Percentage Gain/Loss<h3 style="color: {{ crypto.get_gainloss_color }};">{{ crypto.get_gainloss_percentage | floatformat:2 | intcomma }}%</h3></li>
               <form action="{% url 'manager:change_color' crypto.u_id %}" method="post">
                 {% csrf_token %}
