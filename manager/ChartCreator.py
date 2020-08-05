@@ -38,6 +38,7 @@ class LineGraph():
         elif type == 'crypto':
             for price_time in info.reference_crypto.previous_prices_times:
                 converted_balance_time = datetime.strptime(price_time, "%Y-%m-%d %H:%M:%S.%f")
+                converted_balance_time -= timedelta(hours=7)
                 self.dates.append(converted_balance_time.strftime("%a-%-I:%M"))
             converted_balance_time = datetime.strptime(info.reference_crypto.current_time, "%Y-%m-%d %H:%M:%S.%f")
             converted_balance_time -= timedelta(hours=7)
