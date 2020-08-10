@@ -47,7 +47,7 @@ class MyCryptosView():
         return (float(self.account.current_balance) - self.calculate_total_invested())
 
     def calculate_gainloss_percentage(self, invested):
-        return ((float(self.account.current_balance) - invested) / float(self.account.current_balance)) * 100
+        return ((float(self.account.current_balance) - invested) / invested) * 100
 
     def get_gainloss_percentage(self):
         invested = self.calculate_total_invested()
