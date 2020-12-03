@@ -8,7 +8,7 @@ def load_supported_cryptos():
     return crypto_names
 
 def query_site(cryptos):
-    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol={}&CMC_PRO_API_KEY=3f2deba6-cbf5-4d3b-8766-40223c806f7e'
+    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol={}&CMC_PRO_API_KEY=APIKEYHERE'
     request = requests.get(url.format(cryptos))
     if request.json()['status']['error_code'] != 400:
         result = request.json()['data']
